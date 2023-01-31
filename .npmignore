@@ -1,2 +1,6 @@
+.github
+coverage
+reports
 src
+tests
 rollup.config.js
