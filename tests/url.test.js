@@ -18,6 +18,11 @@ test('queryStringToObject : Verify ?param1=45', () => {
   expect(result).toEqual({param1: '45'});
 });
 
+test('queryStringToObject : Verify param1=45', () => {
+  const result = queryStringToObject('param1=45');
+  expect(result).toEqual({param1: '45'});
+});
+
 test('queryStringToObject : Verify ?param1=45&param2=test', () => {
   const result = queryStringToObject('?param1=45&param2=test');
   expect(result).toEqual({param1: '45', param2: 'test'});
@@ -30,6 +35,11 @@ test('queryStringToObject : Verify ?param1=45&param2=test1&param2=test2', () => 
 
 test('queryStringToObject : Verify ?param1=45&param2[]=test1&param2[]=test2', () => {
   const result = queryStringToObject('?param1=45&param2[]=test1&param2[]=test2');
+  expect(result).toEqual({param1: '45', param2: ['test1', 'test2']});
+});
+
+test('queryStringToObject : Verify param1=45&param2[]=test1&param2[]=test2', () => {
+  const result = queryStringToObject('param1=45&param2[]=test1&param2[]=test2');
   expect(result).toEqual({param1: '45', param2: ['test1', 'test2']});
 });
 

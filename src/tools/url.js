@@ -29,7 +29,7 @@ export function queryStringToObject(queryString = "", first = true) {
           return decodeURIComponent(queryString);
         }
         myLogger.info("jsonapi-front.queryStringToObject.end");
-        return {};
+        hashes.push(queryString);
       }
     }
     hashes.forEach((hash) => {

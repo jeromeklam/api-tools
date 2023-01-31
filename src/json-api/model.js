@@ -22,26 +22,24 @@ export function uniqueId(pObjectName, pId) {
 /**
  * setModelValue : Affecte une valeur à une clef d'un modèle, niveaux séparés par .
  *
- * @param pModel {Object} - Le modèle
- * @param pKey {String} - La clef à mettre à jour
- * @param pValue {Mixed} - La valeur à affecter
+ * @param {Object} pModel Le modèle
+ * @param {String} pKey   La clef à mettre à jour
+ * @param {Mixed} pValue  La valeur à affecter
  */
 export function setModelValue(pModel, pKey, pValue) {
-  try {
-    const datas = null;
-    let fromObj = pModel;
-    const elems = pKey.split('.');
-    let first = null;
-    while (elems.length > 0) {
-      if (first !== null) {
-        fromObj = fromObj[first];
-      }
-      first = elems.shift();
-    }
-    fromObj[first] = pValue;
-  } catch (ex) {
-    console.error(ex);
+  if (!pModel) {
+    pModel = {};
   }
+  let fromObj = pModel;
+  const elems = pKey.split(".");
+  let first = null;
+  while (elems.length > 0) {
+    if (first !== null) {
+      fromObj = fromObj[first];
+    }
+    first = elems.shift();
+  }
+  fromObj[first] = pValue;
 }
 
 /**
@@ -82,7 +80,7 @@ export function isEmptyModel(pModel) {
   if (!pModel.id) {
     return true;
   }
-  if (pModel.id === '' || pModel.id === 0 || pModel.id === '0') {
+  if (pModel.id === "" || pModel.id === 0 || pModel.id === "0") {
     return true;
   }
   return false;
@@ -98,47 +96,43 @@ function buildModelRelationship(
   options,
   cache,
   level = 0,
-  done = [],
+  done = []
 ) {
   const { ignoreLinks } = options;
   const rel = target.relationships[relationship];
-  if (typeof rel.data !== 'undefined') {
+  if (typeof rel.data !== "undefined") {
     if (Array.isArray(rel.data)) {
-      return rel.data.map(child => normalizedObjectModeler(
-        reducer,
-        child.type,
-        child.id,
-        options,
-        cache,
-        level + 1,
-        done,
-      ) || child);
+      return rel.data.map(
+        (child) =>
+          normalizedObjectModeler(reducer, child.type, child.id, options, cache, level + 1, done) ||
+          child
+      );
     } else if (rel.data === null) {
       return null;
     }
-    return normalizedObjectModeler(
-      reducer,
-      rel.data.type,
-      rel.data.id,
-      options,
-      cache,
-      level + 1,
-      done,
-    ) || rel.data;
+    return (
+      normalizedObjectModeler(
+        reducer,
+        rel.data.type,
+        rel.data.id,
+        options,
+        cache,
+        level + 1,
+        done
+      ) || rel.data
+    );
   }
   if (Array.isArray(rel)) {
-    return rel.map(child => normalizedObjectModeler(
-      reducer,
-      child.type,
-      child.id,
-      options,
-      cache,
-      level + 1,
-      done,
-    ) || child);
+    return rel.map(
+      (child) =>
+        normalizedObjectModeler(reducer, child.type, child.id, options, cache, level + 1, done) ||
+        child
+    );
   }
   if (!ignoreLinks && rel.links) {
-    throw new Error("Remote lazy loading is not supported. To disable this error, include option 'ignoreLinks: true' in the normalizedObjectModeler function like so: normalizedObjectModeler(reducer, type, id, { ignoreLinks: true })");
+    throw new Error(
+      "Remote lazy loading is not supported. To disable this error, include option 'ignoreLinks: true' in the normalizedObjectModeler function like so: normalizedObjectModeler(reducer, type, id, { ignoreLinks: true })"
+    );
   }
   return [];
 }
@@ -163,7 +157,7 @@ export function normalizedObjectModeler(
   providedOpts = {},
   cache = {},
   level = 0,
-  done = [],
+  done = []
 ) {
   const defOpts = {
     eager: false,
@@ -179,10 +173,10 @@ export function normalizedObjectModeler(
   if ((level === 0 && pId === null) || Array.isArray(pId)) {
     if (pObj.MAINELEM === pType) {
       const idList = pObj.SORTEDELEMS;
-      return idList.map(e => normalizedObjectModeler(pObj, pType, e, options, cache, level + 1));
+      return idList.map((e) => normalizedObjectModeler(pObj, pType, e, options, cache, level + 1));
     }
     const idList2 = pId || Object.keys(pObj[pType]);
-    return idList2.map(e => normalizedObjectModeler(pObj, pType, e, options, cache, level + 1));
+    return idList2.map((e) => normalizedObjectModeler(pObj, pType, e, options, cache, level + 1));
   }
   const ids = pId.toString();
   const uuid = uniqueId(pType, ids);
@@ -206,7 +200,7 @@ export function normalizedObjectModeler(
     ret.type = pType;
   }
   cache[uuid] = ret;
-  const found = done.find(elem => elem.type === ret.type && elem.id === ret.id);
+  const found = done.find((elem) => elem.type === ret.type && elem.id === ret.id);
   if (target.relationships && !found) {
     done.push({ type: ret.type, id: ret.id });
     Object.keys(target.relationships).forEach((relationship) => {
@@ -218,7 +212,7 @@ export function normalizedObjectModeler(
           options,
           cache,
           level,
-          done,
+          done
         );
       } else {
         Object.defineProperty(ret, relationship, {
@@ -234,7 +228,7 @@ export function normalizedObjectModeler(
               options,
               cache,
               level,
-              done,
+              done
             );
             return ret[field];
           },
@@ -246,7 +240,7 @@ export function normalizedObjectModeler(
       }
     });
   }
-  if (includeId && typeof ret.id === 'undefined') {
+  if (includeId && typeof ret.id === "undefined") {
     ret.id = ids;
   }
   return ret;

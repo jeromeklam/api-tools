@@ -1,4 +1,12 @@
-import { deepClone,lambert93toWGPS } from '../src/index.js';
+import { sanitize, deepClone,lambert93toWGPS, deepCompare } from '../src/tools/utils.js';
+
+/**
+ * sanitize
+ */
+test('sanitize : Verify ""', () => {
+  const result = sanitize('');
+  expect(result).toEqual('');
+});
 
 /**
  * lambert93toWGPS
@@ -35,4 +43,20 @@ test('deepClone : Verify object with date', () => {
   let nDate = new Date();
   const result = deepClone({'test': '55', 'date': nDate});
   expect(result).toEqual({'test': '55', 'date': nDate});
+});
+
+/**
+ * deepCompare
+ */
+test('deepCompare : Verify null', () => {
+  const result = deepCompare(null, null, null);
+  expect(result).toEqual(null);
+});
+test('deepCompare : Verify two empty objets', () => {
+  const result = deepCompare({}, {}, {});
+  expect(result).toEqual({});
+});
+test('deepCompare : Verify two empty objets', () => {
+  const result = deepCompare({test: 45}, {toto: 56}, {});
+  expect(result).toEqual({test: 45, toto: 56});
 });

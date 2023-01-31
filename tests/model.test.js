@@ -1,9 +1,11 @@
 import {
   uniqueId,
+  setModelValue,
+  isEmptyModel,
   getNewModel,
   normalizedObjectModeler,
   normalizedObjectFirstModel,
-} from '../src/json-api/model.js';
+} from "../src/json-api/model.js";
 
 const Norm3 = {
   MAINELEM: "Free_Test",
@@ -31,6 +33,25 @@ test("uniqueId : Verify standard", () => {
 });
 
 /**
+ * setModelValue
+ */
+test("setModelValue : Verify empty model", () => {
+  let result = null;
+  setModelValue(result, "test", 45);
+  expect(result).toEqual(null);
+});
+test("setModelValue : Verify simple value", () => {
+  let result = {};
+  setModelValue(result, "test", 45);
+  expect(result).toEqual({ test: 45 });
+});
+test("setModelValue : Verify complex value", () => {
+  let result = { test: { test2: 56 } };
+  setModelValue(result, "test.test2", 45);
+  expect(result).toEqual({ test: { test2: 45 } });
+});
+
+/**
  * getNewModel
  */
 test("getNewModel : Verify simple model number id", () => {
@@ -44,6 +65,26 @@ test("getNewModel : Verify simple model string id", () => {
 test("getNewModel : Verify model", () => {
   const result = getNewModel("Free_Test", "45", { name: "test" });
   expect(result).toEqual({ id: 45, type: "Free_Test", name: "test" });
+});
+
+/**
+ * isEmptyModel
+ */
+test("isEmptyModel : Verify null", () => {
+  const result = isEmptyModel(null);
+  expect(result).toEqual(true);
+});
+test("isEmptyModel : Verify empty object", () => {
+  const result = isEmptyModel({});
+  expect(result).toEqual(true);
+});
+test("isEmptyModel : Verify object with empty id", () => {
+  const result = isEmptyModel({id: 0});
+  expect(result).toEqual(true);
+});
+test("isEmptyModel : Verify object with id", () => {
+  const result = isEmptyModel({id: 4});
+  expect(result).toEqual(false);
 });
 
 /**
